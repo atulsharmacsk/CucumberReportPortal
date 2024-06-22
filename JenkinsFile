@@ -5,7 +5,7 @@ pipeline {
         // Define the Maven tool installation name
         MAVEN_HOME = tool name: 'Maven', type: 'maven'
         // Credential ID for ReportPortal token
-        RP_CREDS = credentials('rpCreds')
+        RP_CREDS = 'rpCreds'
     }
 
     stages {
