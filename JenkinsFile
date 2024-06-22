@@ -1,6 +1,13 @@
 pipeline {
     agent any
 
+    environment {
+        // Define the Maven tool installation name
+        MAVEN_HOME = tool name: 'Maven', type: 'maven'
+        // Define the operating system
+        IS_WINDOWS = isUnix() ? false : true
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -9,9 +16,13 @@ pipeline {
         }
         stage('Build') {
             steps {
-//                 sh 'mvn clean test'
-                def mvnHome = tool name: 'Maven', type: 'maven'
-                bat "${mvnHome}/bin/mvn clean test"
+                // Run Maven commands based on the detected OS
+                script {
+                    if (IS_WINDOWS) {
+                        bat "\"${MAVEN_HOME}\\bin\\mvn\" clean test"
+                    } else {
+                        sh "\"${MAVEN_HOME}/bin/mvn\" clean test"
+                    }
             }
         }
     }
