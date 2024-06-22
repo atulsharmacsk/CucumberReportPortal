@@ -16,15 +16,16 @@ pipeline {
         stage('setting up reportportal') {
             steps{
                 script {
-                    withCredentials([string(credentialsId: "rpCreds", variable: 'token')]){
+                    withCredentials([string(credentialsId: repCreds, variable: 'token')]){
                             def content = """
                                 rp.api.key = ${token}
                                 rp.launch = JENKINS_DEMO_${JOB_BASE_NAME}
+                                rp.description = ${JOB_URL}${BUILD_NUMBER}
                             """.stripIndent()
                             def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
                             def existingContent = readFile(filePath).trim()
                             writeFile file: filePath, text: existingContent+"\n"+content, append:true
-    
+
                             // Print content of the updated file
                             echo "Updated content of ${filePath}:"
                             echo readFile(filePath)
@@ -41,5 +42,6 @@ pipeline {
                 }
             }
         }
+
     }
 }
