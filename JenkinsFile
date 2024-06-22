@@ -16,7 +16,7 @@ pipeline {
         stage('setting up reportportal') {
             steps{
                 script {
-                    withCredentials([string(credentialsId: rpCreds, variable: 'token')]){
+                    withCredentials([string(credentialsId: repCreds, variable: 'token')]){
                             def content = """
                                 rp.api.key = ${token}
                                 rp.launch = JENKINS_DEMO_${JOB_BASE_NAME}
