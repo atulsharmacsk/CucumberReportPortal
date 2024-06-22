@@ -4,8 +4,6 @@ pipeline {
     environment {
         // Define the Maven tool installation name
         MAVEN_HOME = tool name: 'Maven', type: 'maven'
-        // Define the operating system
-        IS_WINDOWS = isUnix() ? false : true
     }
 
     stages {
@@ -14,17 +12,36 @@ pipeline {
                 git url: 'https://github.com/atulsharmacsk/CucumberReportPortal'
             }
         }
-        stage('Build') {
-            steps {
-                // Run Maven commands based on the detected OS
+
+        stage('setting up reportportal') {
+            steps{
                 script {
-                    if (IS_WINDOWS) {
-                        bat "\"${MAVEN_HOME}\\bin\\mvn\" clean test"
-                    } else {
-                        sh "\"${MAVEN_HOME}/bin/mvn\" clean test"
+                    withCredentials([string(credentialsId: repCreds, variable: 'token')]){
+                            def content = """
+                                rp.api.key = ${token}
+                                rp.launch = JENKINS_DEMO_${JOB_BASE_NAME}
+                                rp.description = ${JOB_URL}${BUILD_NUMBER}
+                            """.stripIndent()
+                            def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
+                            def existingContent = readFile(filePath).trim()
+                            writeFile file: filePath, text: existingContent+"\n"+content, append:true
+
+                            // Print content of the updated file
+                            echo "Updated content of ${filePath}:"
+                            echo readFile(filePath)
                     }
                 }
             }
         }
+
+        stage('Build') {
+            steps {
+                // Run Maven commands based on the detected OS
+                script {
+                     bat "\"${MAVEN_HOME}\\bin\\mvn\" clean test"
+                }
+            }
+        }
+
     }
 }
