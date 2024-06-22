@@ -12,6 +12,23 @@ pipeline {
                 git url: 'https://github.com/atulsharmacsk/CucumberReportPortal'
             }
         }
+
+        stage('setting up reportportal') {
+        withCredentials([string(credentialsId: rpCreds, variable: 'token')]){
+                def content = """
+                    rp.api.key = ${token}
+                    rp.launch = JENKINS_DEMO_${JOB_BASE_NAME}
+                """.stripIndent()
+                def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
+                def existingContent = readFile(filePath).trim()
+                writeFile file: filePath, text: existingContent+"\n"+content, append:true
+
+                // Print content of the updated file
+                echo "Updated content of ${filePath}:"
+                echo readFile(filePath)
+            }
+        }
+
         stage('Build') {
             steps {
                 // Run Maven commands based on the detected OS
