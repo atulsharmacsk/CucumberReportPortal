@@ -5,7 +5,7 @@ pipeline {
         // Define the Maven tool installation name
         MAVEN_HOME = tool name: 'Maven', type: 'maven'
         // Define the operating system
-        IS_WINDOWS = isUnix() ? false : true
+        IS_WINDOWS = isUnix() ? 'false' : 'true'
     }
 
     stages {
