@@ -4,6 +4,8 @@ pipeline {
     environment {
         // Define the Maven tool installation name
         MAVEN_HOME = tool name: 'Maven', type: 'maven'
+        // Credential ID for ReportPortal token
+        RP_CREDS = credentials('rpCreds')
     }
 
     stages {
@@ -16,7 +18,7 @@ pipeline {
         stage('setting up reportportal') {
             steps{
                 script {
-                    withCredentials([string(credentialsId: rpCreds, variable: 'token')]){
+                    withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]){
                             def content = """
                                 rp.api.key = ${token}
                                 rp.launch = JENKINS_DEMO_${JOB_BASE_NAME}
