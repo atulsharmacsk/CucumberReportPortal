@@ -2,16 +2,21 @@ pipeline {
     agent any
 
     environment {
+        // Define the Maven tool installation name
         MAVEN_HOME = tool name: 'Maven', type: 'maven'
-        IS_WINDOWS = isUnix() ? 'false' : 'true'
     }
 
     stages {
-        stage('Test') {
+        stage('Checkout') {
             steps {
+                git url: 'https://github.com/atulsharmacsk/CucumberReportPortal'
+            }
+        }
+        stage('Build') {
+            steps {
+                // Run Maven commands based on the detected OS
                 script {
-                    echo "MAVEN_HOME: ${MAVEN_HOME}"
-                    echo "IS_WINDOWS: ${IS_WINDOWS}"
+                     bat "\"${MAVEN_HOME}\\bin\\mvn\" clean test"
                 }
             }
         }
