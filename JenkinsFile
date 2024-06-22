@@ -4,12 +4,14 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/atulsharmacsk/CucumberReportPortal'
+                git url: 'https://github.com/atulsharmacsk/CucumberReportPortal'
             }
         }
         stage('Build') {
             steps {
-                sh 'mvn clean test'
+//                 sh 'mvn clean test'
+                def mvnHome = tool name: 'Maven', type: 'maven'
+                bat "${mvnHome}/bin/mvn clean test"
             }
         }
     }
