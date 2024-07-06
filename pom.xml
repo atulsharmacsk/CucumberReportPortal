@@ -88,6 +88,31 @@
                     </includes>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>rerun-failed-tests</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>io.cucumber.core.cli.Main</mainClass>
+                            <arguments>
+                                <argument>--plugin</argument>
+                                <argument>json:target/cucumber-reports/json/cucumber-rerun.json</argument>
+                                <argument>@target/rerun.txt</argument>
+                            </arguments>
+                            <classpathScope>test</classpathScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 </project>
