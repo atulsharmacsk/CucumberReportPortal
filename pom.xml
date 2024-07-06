@@ -104,8 +104,9 @@
                             <mainClass>io.cucumber.core.cli.Main</mainClass>
                             <arguments>
                                 <argument>--plugin</argument>
-                                <argument>json:target/cucumber-reports/json/cucumber-rerun.json</argument>
-                                <argument>com.epam.reportportal.cucumber.ScenarioReporter</argument>     
+                                <argument>com.epam.reportportal.cucumber.ScenarioReporter</argument>   
+                                <argument>--plugin</argument>
+                                <argument>json:target/cucumber-reports/json/cucumber-rerun.json</argument>  
                                 <argument>@target/rerun.txt</argument>     
                             </arguments>
                             <classpathScope>test</classpathScope>
