@@ -105,7 +105,6 @@
                             <arguments>
                                 <argument>--plugin</argument>
                                 <argument>json:target/cucumber-reports/json/cucumber-rerun.json</argument>
-                                <argument>--plugin</argument>
                                 <argument>com.epam.reportportal.cucumber.ScenarioReporter</argument>     
                                 <argument>@target/rerun.txt</argument>     
                             </arguments>
