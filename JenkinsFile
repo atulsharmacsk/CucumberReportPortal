@@ -23,6 +23,7 @@ pipeline {
                                 rp.api.key = ${token}
                                 rp.launch = JENKINS_DEMO_${JOB_BASE_NAME}
                                 rp.description = ${JOB_URL}${BUILD_NUMBER}
+                                rp.attributes = Cucumber:${JOB_BASE_NAME}
                             """.stripIndent()
                             def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
                             def existingContent = readFile(filePath).trim()
