@@ -40,12 +40,21 @@ pipeline {
             steps {
                 // Run Maven commands based on the detected OS
                 script {
-                     bat "\"${MAVEN_HOME}\\bin\\mvn\" clean test"
+                    try {
+                        bat "\"${MAVEN_HOME}\\bin\\mvn\" clean test"
+                    }
+                    catch(Exception e) {
+                        echo "Build stage failed with error: ${e}"
+                        currentBuild.result = 'FAILURE'
+                    } 
                 }
             }
         }
 
          stage('rerun failed cases') {
+            when {
+                expression { currentBuild.result == 'FAILURE' }
+            }
              steps {
                  // Run Maven commands based on the detected OS
                  script {
