@@ -67,7 +67,7 @@ pipeline {
                   echo "Updated content of ${filePath}:"
                   echo readFile(filePath)
 
-                  bat "\"${MAVEN_HOME}\\bin\\mvn\" exec:java@rerun-failed-tests"
+                  bat "\"${MAVEN_HOME}\\bin\\mvn\" exec:java@rerun-failed-tests -DpassTest=1"
                  }
              }
          }
