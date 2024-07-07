@@ -86,10 +86,12 @@ pipeline {
                                 """.stripIndent()
                   def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
                   def existingContent = readFile(filePath).trim()
-                  writeFile file: filePath, text: existingContent+content, append:true
+                  writeFile file: filePath, text: content+existingContent, append:true
                  // Print content of the updated file
                   echo "Updated content of ${filePath}:"
                   echo readFile(filePath)
+
+                  sleep 3  
 
                   bat "\"${MAVEN_HOME}\\bin\\mvn\" exec:java@rerun-failed-tests -DpassTest=1"
                  }
