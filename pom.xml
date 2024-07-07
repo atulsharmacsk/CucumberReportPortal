@@ -123,12 +123,12 @@
                             <executable>java</executable>     
 <!--                             <mainClass>io.cucumber.core.cli.Main</mainClass> -->
                             <mainClass>net.serenitybdd.cucumber.cli.Main</mainClass>
-                            <jvmArgs>
+<!--                             <jvmArgs>
                                 <jvmArg>-Xmx8096m</jvmArg>
-                            </jvmArgs>
+                            </jvmArgs> -->
                             <arguments>
-                                <argument>-cp</argument>   
-<!--                                 <classpath/> -->
+<!--                                 <argument>-cp</argument>   
+<!--                                 <classpath/> --> -->
                                 <argument>--glue</argument>
                                 <argument>stepdefinitions</argument>
                                 <argument>--plugin</argument>
