@@ -112,10 +112,8 @@
 <!--                             <mainClass>io.cucumber.core.cli.Main</mainClass> -->
                             <arguments>
                                 <argument>-Xmx8096m</argument>
-                                <argument>-cp</argument>
-                                <argument>     
-                                 <classpath/>
-                                </argument>
+                                <argument>-cp</argument>   
+<!--                                 <classpath/> -->
                                 <argument>net.serenitybdd.cucumber.cli.main</argument>
                                 <argument>--glue</argument>
                                 <argument>stepdefinitions</argument>
