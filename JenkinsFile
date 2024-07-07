@@ -59,7 +59,7 @@ pipeline {
              steps {
                  // Run Maven commands based on the detected OS
                  script {
-                  def content = "rp.rerun = true"
+                  def content = "rp.retry = true"
                   def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
                   def existingContent = readFile(filePath).trim()
                   writeFile file: filePath, text: existingContent+"\n"+content, append:true
