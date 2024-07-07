@@ -6,6 +6,8 @@ pipeline {
         MAVEN_HOME = tool name: 'Maven', type: 'maven'
         // Credential ID for ReportPortal token
         RP_CREDS = 'rpCreds'
+        REPORTPORTAL_URL = 'http://localhost:8080'
+        REPORTPORTAL_PROJECT = 'cucumber'
     }
 
     stages {
@@ -57,9 +59,31 @@ pipeline {
                 expression { currentBuild.result == 'FAILURE' }
             }
              steps {
-                 // Run Maven commands based on the detected OS
                  script {
-                  def content = "rp.rerun = true"
+                    //get latest launch id
+                     withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]){
+                     def response = httpRequest(
+                     url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch?filter.sort=-startTime&page.page=1&page.size=1",
+                        customHeaders: [
+                            [
+                                name: 'Authorization', 
+                                value: "Bearer ${token}", 
+                                maskValue: true
+                            ]
+                        ]
+                    )
+                    def jsonResponse = readJSON text: response.content
+                    def latestLaunchId = jsonResponse.content[0].id
+                    echo "Latest Launch ID: ${latestLaunchId}"
+                    // Store the launch ID for later use
+                    env.LATEST_LAUNCH_ID = latestLaunchId
+                    }
+
+                 // append reportportal.properties for rerun
+                  def content = """
+                                    rp.rerun = true,
+                                    rp.rerun.of = ${env.LATEST_LAUNCH_ID}
+                                """.stripIndent()
                   def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
                   def existingContent = readFile(filePath).trim()
                   writeFile file: filePath, text: existingContent+"\n"+content, append:true
