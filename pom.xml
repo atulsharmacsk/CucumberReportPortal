@@ -123,8 +123,10 @@
                             <executable>java</executable>     
 <!--                             <mainClass>io.cucumber.core.cli.Main</mainClass> -->
                             <mainClass>net.serenitybdd.cucumber.cli.Main</mainClass>
+                            <jvmArgs>
+                                <jvmArg>-Xmx8096m</jvmArg>
+                            </jvmArgs>
                             <arguments>
-                                <argument>-Xmx8096m</argument>
                                 <argument>-cp</argument>   
 <!--                                 <classpath/> -->
                                 <argument>--glue</argument>
