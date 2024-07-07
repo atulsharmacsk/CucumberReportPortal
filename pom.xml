@@ -113,7 +113,9 @@
                             <arguments>
                                 <argument>-Xmx8096m</argument>
                                 <argument>-cp</argument>
-                                <classpath/>
+                                <argument>     
+                                 <classpath/>
+                                </argument>
                                 <argument>net.serenitybdd.cucumber.cli.main</argument>
                                 <argument>--glue</argument>
                                 <argument>stepdefinitions</argument>
