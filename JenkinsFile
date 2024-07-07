@@ -27,7 +27,7 @@ pipeline {
                             """.stripIndent()
                             def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
                             def existingContent = readFile(filePath).trim()
-                            writeFile file: filePath, text: existingContent+"\n"+content, append:true
+                            writeFile file: filePath, text: existingContent+content, append:true
 
                             // Print content of the updated file
                             echo "Updated content of ${filePath}:"
