@@ -33,6 +33,13 @@
             <version>${cucumber.version}</version>
             <scope>test</scope>
         </dependency>
+         <!-- https://mvnrepository.com/artifact/net.serenity-bdd/serenity-cucumber -->
+         <dependency>
+             <groupId>net.serenity-bdd</groupId>
+             <artifactId>serenity-cucumber</artifactId>
+             <version>4.1.20</version>
+         </dependency>
+
 
         <!-- JUnit 5 dependencies -->
         <dependency>
@@ -98,11 +105,18 @@
                         <id>rerun-failed-tests</id>
                         <phase>verify</phase>
                         <goals>
-                            <goal>java</goal>
+                            <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <mainClass>io.cucumber.core.cli.Main</mainClass>
+                            <executable>java</executable>     
+<!--                             <mainClass>io.cucumber.core.cli.Main</mainClass> -->
                             <arguments>
+                                <argument>-Xmx8096m</argument>
+                                <argument>-cp</argument>
+                                <classpath/>
+                                <argument>net.serenitybdd.cucumber.cli.main</cucumber>
+                                <argument>--glue</argument>
+                                <argument>stepdefinitions</argument>
                                 <argument>--plugin</argument>
                                 <argument>com.epam.reportportal.cucumber.ScenarioReporter</argument>   
                                 <argument>--plugin</argument>
