@@ -22,7 +22,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]){
                             def content = """
-                                rp.api.key = ${token}
+                                rp.uuid = ${token}
                                 rp.launch = JENKINS_DEMO_${JOB_BASE_NAME}
                                 rp.description = ${JOB_URL}${BUILD_NUMBER}
                                 rp.attributes = Cucumber:${JOB_BASE_NAME}
