@@ -22,10 +22,10 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]){
                             def content = """
-                                rp.api.key = ${token}
-                                rp.launch = JENKINS_DEMO_${JOB_BASE_NAME}
-                                rp.description = ${JOB_URL}${BUILD_NUMBER}
-                                rp.attributes = Cucumber:${JOB_BASE_NAME}
+                                rp.api.key=${token}
+                                rp.launch=JENKINS_DEMO_${JOB_BASE_NAME}
+                                rp.description=${JOB_URL}${BUILD_NUMBER}
+                                rp.attributes=Cucumber:${JOB_BASE_NAME}
                             """.stripIndent()
                             def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
                             def existingContent = readFile(filePath).trim()
@@ -81,12 +81,12 @@ pipeline {
 
                  // append reportportal.properties for rerun
                   def content = """
-                                    rp.rerun = true
-                                    rp.rerun.of = ${env.LATEST_LAUNCH_ID}
+                                    rp.rerun=true
+                                    rp.rerun.of=${env.LATEST_LAUNCH_ID}
                                 """.stripIndent()
                   def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
                   def existingContent = readFile(filePath).trim()
-                  writeFile file: filePath, text: content+existingContent, append:true
+                  writeFile file: filePath, text: existingContent+content, append:true
                  // Print content of the updated file
                   echo "Updated content of ${filePath}:"
                   echo readFile(filePath)
