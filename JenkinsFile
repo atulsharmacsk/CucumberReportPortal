@@ -83,6 +83,7 @@ pipeline {
                   def content = """
                                     rp.rerun=true
                                     rp.rerun.of=${env.LATEST_LAUNCH_ID}
+                                    rp.launch.uuid=${env.LATEST_LAUNCH_ID}
                                 """.stripIndent()
                   def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
                   def existingContent = readFile(filePath).trim()
