@@ -93,7 +93,7 @@ pipeline {
 
                   sleep 3  
 
-                  bat "\"${MAVEN_HOME}\\bin\\mvn\" exec:java@rerun-failed-tests -DpassTest=1"
+                  bat "\"${MAVEN_HOME}\\bin\\mvn\" exec:java@rerun-failed-tests"
                  }
              }
          }
