@@ -72,7 +72,7 @@ pipeline {
                              def jsonResponse = readJSON text: response.content
                              def latestLaunchId = jsonResponse.content[0].id
 
-                             def link = "<a href=\"${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launches/all/${latestLaunchId}"
+                             def link = "<a href=\"${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launches/all/${latestLaunchId}\">go to launch #${latestLaunchId}</a>"
                              currentBuild.description = link
                          }
                      }
