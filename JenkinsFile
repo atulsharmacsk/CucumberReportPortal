@@ -77,6 +77,7 @@ pipeline {
                          }
                      }
                  }
+         }
 
          stage('rerun failed cases') {
             when {
