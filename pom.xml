@@ -117,10 +117,9 @@
                         <id>rerun-failed-tests</id>
                         <phase>verify</phase>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>java</goal>
                         </goals>
                         <configuration>
-                            <executable>java</executable>     
 <!--                             <mainClass>io.cucumber.core.cli.Main</mainClass> -->
                             <mainClass>net.serenitybdd.cucumber.cli.Main</mainClass>
                             <arguments>
