@@ -103,6 +103,7 @@ pipeline {
                         // Store the launch ID for later use
                         env.LATEST_LAUNCH_ID = latestLaunchId
 
+                        def currentTimeMillis = System.currentTimeMillis()
                         def response2 = httpRequest(
                         url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch",
                         httpMode: 'POST',
@@ -110,6 +111,7 @@ pipeline {
                         requestBody: """{
                             "name": "JENKINS_DEMO_${JOB_BASE_NAME}",
                             "description": "${JOB_URL}${BUILD_NUMBER}",
+                            "startTime":  "${currentTimeMillis}"
                             "mode": "DEFAULT",
                             "rerun": true
                         }""",
