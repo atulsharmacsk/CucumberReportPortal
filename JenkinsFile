@@ -28,7 +28,7 @@ pipeline {
                             rp.attributes=Cucumber:${JOB_BASE_NAME}
                         """.stripIndent()
                         def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
-                        writeFile file: filePath, text: content
+                        writeFile file: filePath, text: content, append: true
 
                         // Print content of the updated file
                         echo "Updated content of ${filePath}:"
@@ -103,6 +103,7 @@ pipeline {
                     }
 
                     // Append to reportportal.properties for rerun
+                    def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
                     def rerunContent = """
                         rp.rerun=true
                         rp.rerun.of=${env.LATEST_LAUNCH_ID}
