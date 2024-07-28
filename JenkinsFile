@@ -17,23 +17,22 @@ pipeline {
             }
         }
 
-        stage('setting up reportportal') {
-            steps{
+        stage('Setting Up ReportPortal') {
+            steps {
                 script {
-                    withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]){
-                            def content = """
-                                rp.api.key=${token}
-                                rp.launch=JENKINS_DEMO_${JOB_BASE_NAME}
-                                rp.description=${JOB_URL}${BUILD_NUMBER}
-                                rp.attributes=Cucumber:${JOB_BASE_NAME}
-                            """.stripIndent()
-                            def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
-                            def existingContent = readFile(filePath).trim()
-                            writeFile file: filePath, text: existingContent+content, append:true
+                    withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]) {
+                        def content = """
+                            rp.api.key=${token}
+                            rp.launch=JENKINS_DEMO_${JOB_BASE_NAME}
+                            rp.description=${JOB_URL}${BUILD_NUMBER}
+                            rp.attributes=Cucumber:${JOB_BASE_NAME}
+                        """.stripIndent()
+                        def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
+                        writeFile file: filePath, text: content
 
-                            // Print content of the updated file
-                            echo "Updated content of ${filePath}:"
-                            echo readFile(filePath)
+                        // Print content of the updated file
+                        echo "Updated content of ${filePath}:"
+                        echo readFile(filePath)
                     }
                 }
             }
@@ -45,56 +44,58 @@ pipeline {
                 script {
                     try {
                         bat "\"${MAVEN_HOME}\\bin\\mvn\" clean test"
-                    }
-                    catch(Exception e) {
+                    } catch (Exception e) {
                         echo "Build stage failed with error: ${e}"
                         currentBuild.result = 'FAILURE'
-                    } 
+                    }
                 }
             }
         }
 
-         stage('link rp to jenkins') {
-                     steps {
-                         script {
-                            //get latest launch id
-                             withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]){
-                              def response = httpRequest(
-                              url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch?page.page=1&page.size=1&page.sort=startTime,desc",
-                                 customHeaders: [
-                                     [
-                                         name: 'Authorization',
-                                         value: "Bearer ${token}",
-                                         maskValue: true
-                                     ]
-                                 ]
-                             )
-                             def jsonResponse = readJSON text: response.content
-                             def latestLaunchId = jsonResponse.content[0].id
+        stage('Link RP to Jenkins') {
+            steps {
+                script {
+                    // Get latest launch ID
+                    withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]) {
+                        def response = httpRequest(
+                            url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch?page.page=1&page.size=1&page.sort=startTime,desc",
+                            customHeaders: [
+                                [
+                                    name: 'Authorization',
+                                    value: "Bearer ${token}",
+                                    maskValue: true
+                                ]
+                            ]
+                        )
+                        def jsonResponse = readJSON text: response.content
+                        def latestLaunchId = jsonResponse.content[0].id
 
-                             def link = "<a href=\"${env.REPORTPORTAL_URL}/ui/#${env.REPORTPORTAL_PROJECT}/launches/all/${latestLaunchId}\">go to launch #${latestLaunchId}</a>"
-                             currentBuild.description = link
-                         }
-                     }
-                 }
-         }
+                        def link = "<a href=\"${env.REPORTPORTAL_URL}/ui/#${env.REPORTPORTAL_PROJECT}/launches/all/${latestLaunchId}\">go to launch #${latestLaunchId}</a>"
+                        currentBuild.description = link
+                    }
+                }
+            }
+        }
 
-         stage('rerun failed cases') {
+        stage('Rerun Failed Cases') {
             when {
                 expression { currentBuild.result == 'FAILURE' }
             }
-             steps {
-                 script {
+            steps {
+                script {
+                    def content = """
+                                rp.endpoint="${env.REPORTPORTAL_URL}",
+                                rp.project=${env.REPORTPORTAL_PROJECT}
+                            """.stripIndent()
 
                     def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
-                    writeFile file: filePath, text: ""
-                    bat "\"${MAVEN_HOME}\\bin\\mvn\" exec:java@rerun-failed-tests"
-                    
-                    //get latest launch id
-                     withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]){
+                    writeFile file: filePath, text: content
+
+                    withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]) {
+                        // Get latest launch ID
                         def response = httpRequest(
-                        url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch?page.page=1&page.size=1&page.sort=startTime,desc",
-                        customHeaders: [
+                            url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch?page.page=1&page.size=1&page.sort=startTime,desc",
+                            customHeaders: [
                                 [
                                     name: 'Authorization',
                                     value: "Bearer ${token}",
@@ -108,52 +109,52 @@ pipeline {
                         // Store the launch ID for later use
                         env.LATEST_LAUNCH_ID = latestLaunchId
 
-                        def currentTimeMillis = System.currentTimeMillis()
-                        def requestBody = [
-                                            name       : "JENKINS_DEMO_${JOB_BASE_NAME}",
-                                            project    : "cucumber",
-                                            description: "${JOB_URL}${BUILD_NUMBER}",
-                                            mode       : "DEFAULT",
-                                            rerun      : true,
-                                            startTime  : currentTimeMillis
-                                        ]
+//                         // Prepare request body
+//                         def currentTimeMillis = System.currentTimeMillis()
+//                         def requestBody = [
+//                             name       : "JENKINS_DEMO_${JOB_BASE_NAME}",
+//                             description: "${JOB_URL}${BUILD_NUMBER}",
+//                             mode       : "DEFAULT",
+//                             rerun      : true,
+//                             startTime  : currentTimeMillis
+//                         ]
+//
+//                         // Make the POST request
+//                         def response2 = httpRequest(
+//                             url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch",
+//                             httpMode: 'POST',
+//                             contentType: 'APPLICATION_JSON',
+//                             requestBody: groovy.json.JsonOutput.toJson(requestBody),
+//                             customHeaders: [
+//                                 [
+//                                     name: 'Authorization',
+//                                     value: "Bearer ${token}",
+//                                     maskValue: true
+//                                 ]
+//                             ]
+//                         )
+//
+//                         echo "Response: ${response2.content}"
+//                     }
 
-                        def response2 = httpRequest(
-                        url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch",
-                        httpMode: 'POST',
-                        contentType: 'APPLICATION_JSON',
-                        requestBody: groovy.json.JsonOutput.toJson(requestBody),
-                        customHeaders: [
-                               [
-                                    name: 'Authorization',
-                                    value: "Bearer ${token}",
-                                    maskValue: true
-                               ]
-                            ]
-                        )
+                 // append reportportal.properties for rerun
+                  def content = """
+                                    rp.rerun=true
+                                    rp.rerun.of=${env.LATEST_LAUNCH_ID}
+                                    rp.launch.uuid=${env.LATEST_LAUNCH_ID}
+                                    rp.logging=true
+                                    rp.log.level=DEBUG
+                                """.stripIndent()
+                  def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
+                  def existingContent = readFile(filePath).trim()
+                  writeFile file: filePath, text: existingContent+content, append:true
+                 // Print content of the updated file
+                  echo "Updated content of ${filePath}:"
+                  echo readFile(filePath)
 
-                     echo "Response: ${response2.content}"
-                    }                     
-                 }
-             }
-         }
-
+                    bat "\"${MAVEN_HOME}\\bin\\mvn\" exec:java@rerun-failed-tests"
+                }
+            }
+        }
     }
 }
-
-
-
-//                  // append reportportal.properties for rerun
-//                   def content = """
-//                                     rp.rerun=true
-//                                     rp.rerun.of=${env.LATEST_LAUNCH_ID}
-//                                     rp.launch.uuid=${env.LATEST_LAUNCH_ID}
-//                                     rp.logging=true
-//                                     rp.log.level=DEBUG
-//                                 """.stripIndent()
-//                   def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
-//                   def existingContent = readFile(filePath).trim()
-//                   writeFile file: filePath, text: existingContent+content, append:true
-//                  // Print content of the updated file
-//                   echo "Updated content of ${filePath}:"
-//                   echo readFile(filePath)
