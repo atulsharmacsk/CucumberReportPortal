@@ -83,14 +83,6 @@ pipeline {
             }
             steps {
                 script {
-                    def initialContent = """
-                        rp.endpoint=${env.REPORTPORTAL_URL}
-                        rp.project=${env.REPORTPORTAL_PROJECT}
-                    """.stripIndent()
-
-                    def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
-                    writeFile file: filePath, text: initialContent
-
                     withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]) {
                         // Get latest launch ID
                         def response = httpRequest(
