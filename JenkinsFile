@@ -85,6 +85,11 @@ pipeline {
             }
              steps {
                  script {
+
+                    def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
+                    writeFile file: filePath, text: ""
+                    bat "\"${MAVEN_HOME}\\bin\\mvn\" exec:java@rerun-failed-tests"
+                    
                     //get latest launch id
                      withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]){
                         def response = httpRequest(
@@ -106,6 +111,7 @@ pipeline {
                         def currentTimeMillis = System.currentTimeMillis()
                         def requestBody = [
                                             name       : "JENKINS_DEMO_${JOB_BASE_NAME}",
+                                            project    : "cucumber",
                                             description: "${JOB_URL}${BUILD_NUMBER}",
                                             mode       : "DEFAULT",
                                             rerun      : true,
@@ -127,8 +133,7 @@ pipeline {
                         )
 
                      echo "Response: ${response2.content}"
-                 }
-                  bat "\"${MAVEN_HOME}\\bin\\mvn\" exec:java@rerun-failed-tests"
+                    }                     
                  }
              }
          }
