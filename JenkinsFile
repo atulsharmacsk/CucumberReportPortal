@@ -104,17 +104,19 @@ pipeline {
                         env.LATEST_LAUNCH_ID = latestLaunchId
 
                         def currentTimeMillis = System.currentTimeMillis()
+                        def requestBody = [
+                                            name       : "JENKINS_DEMO_${JOB_BASE_NAME}",
+                                            description: "${JOB_URL}${BUILD_NUMBER}",
+                                            mode       : "DEFAULT",
+                                            rerun      : true,
+                                            startTime  : currentTimeMillis
+                                        ]
+
                         def response2 = httpRequest(
                         url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch",
                         httpMode: 'POST',
                         contentType: 'APPLICATION_JSON',
-                        requestBody: """{
-                            "name": "JENKINS_DEMO_${JOB_BASE_NAME}",
-                            "description": "${JOB_URL}${BUILD_NUMBER}",
-                            "startTime":  "${currentTimeMillis}"
-                            "mode": "DEFAULT",
-                            "rerun": true
-                        }""",
+                        requestBody: groovy.json.JsonOutput.toJson(requestBody),
                         customHeaders: [
                                [
                                     name: 'Authorization',
@@ -126,8 +128,6 @@ pipeline {
 
                      echo "Response: ${response2.content}"
                  }
-                  sleep 3  
-
                   bat "\"${MAVEN_HOME}\\bin\\mvn\" exec:java@rerun-failed-tests"
                  }
              }
