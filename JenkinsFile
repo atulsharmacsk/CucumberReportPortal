@@ -87,43 +87,43 @@ pipeline {
                  script {
                     //get latest launch id
                      withCredentials([string(credentialsId: env.RP_CREDS, variable: 'token')]){
-                     def response = httpRequest(
-                     url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch?page.page=1&page.size=1&page.sort=startTime,desc",
+                        def response = httpRequest(
+                        url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch?page.page=1&page.size=1&page.sort=startTime,desc",
                         customHeaders: [
-                            [
-                                name: 'Authorization', 
-                                value: "Bearer ${token}", 
-                                maskValue: true
+                                [
+                                    name: 'Authorization',
+                                    value: "Bearer ${token}",
+                                    maskValue: true
+                                ]
                             ]
-                        ]
-                    )
-                    def jsonResponse = readJSON text: response.content
-                    def latestLaunchId = jsonResponse.content[0].uuid
-                    echo "Latest Launch ID: ${latestLaunchId}"
-                    // Store the launch ID for later use
-                    env.LATEST_LAUNCH_ID = latestLaunchId
-                    }
-                    def response = httpRequest(
-                    url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch",
-                    httpMode: 'POST',
-                    contentType: 'APPLICATION_JSON',
-                    requestBody: """{
-                    "name": "JENKINS_DEMO_${JOB_BASE_NAME}",
-                    "description": "${JOB_URL}${BUILD_NUMBER}",
-                    "mode": "DEFAULT",
-                    "rerun": true
-                    }""",
-                    customHeaders: [
-                           [
-                                name: 'Authorization',
-                                value: "Bearer ${token}",
-                                maskValue: true
-                           ]
-                        ]
-                    )
+                        )
+                        def jsonResponse = readJSON text: response.content
+                        def latestLaunchId = jsonResponse.content[0].uuid
+                        echo "Latest Launch ID: ${latestLaunchId}"
+                        // Store the launch ID for later use
+                        env.LATEST_LAUNCH_ID = latestLaunchId
 
-                  echo "Response: ${response.content}"
+                        def response = httpRequest(
+                        url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch",
+                        httpMode: 'POST',
+                        contentType: 'APPLICATION_JSON',
+                        requestBody: """{
+                            "name": "JENKINS_DEMO_${JOB_BASE_NAME}",
+                            "description": "${JOB_URL}${BUILD_NUMBER}",
+                            "mode": "DEFAULT",
+                            "rerun": true
+                        }""",
+                        customHeaders: [
+                               [
+                                    name: 'Authorization',
+                                    value: "Bearer ${token}",
+                                    maskValue: true
+                               ]
+                            ]
+                        )
 
+                     echo "Response: ${response.content}"
+                 }
                   sleep 3  
 
                   bat "\"${MAVEN_HOME}\\bin\\mvn\" exec:java@rerun-failed-tests"
