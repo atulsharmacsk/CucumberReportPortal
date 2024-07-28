@@ -103,21 +103,26 @@ pipeline {
                     // Store the launch ID for later use
                     env.LATEST_LAUNCH_ID = latestLaunchId
                     }
+                    def response = httpRequest(
+                    url: "${env.REPORTPORTAL_URL}/api/v1/${env.REPORTPORTAL_PROJECT}/launch",
+                    httpMode: 'POST',
+                    contentType: 'APPLICATION_JSON',
+                    requestBody: """{
+                    "name": "JENKINS_DEMO_${JOB_BASE_NAME}",
+                    "description": "${JOB_URL}${BUILD_NUMBER}",
+                    "mode": "DEFAULT",
+                    "rerun": true
+                    }""",
+                    customHeaders: [
+                           [
+                                name: 'Authorization',
+                                value: "Bearer ${token}",
+                                maskValue: true
+                           ]
+                        ]
+                    )
 
-                 // append reportportal.properties for rerun
-                  def content = """
-                                    rp.rerun=true
-                                    rp.rerun.of=${env.LATEST_LAUNCH_ID}
-                                    rp.launch.uuid=${env.LATEST_LAUNCH_ID}
-                                    rp.logging=true
-                                    rp.log.level=DEBUG
-                                """.stripIndent()
-                  def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
-                  def existingContent = readFile(filePath).trim()
-                  writeFile file: filePath, text: existingContent+content, append:true
-                 // Print content of the updated file
-                  echo "Updated content of ${filePath}:"
-                  echo readFile(filePath)
+                  echo "Response: ${response.content}"
 
                   sleep 3  
 
@@ -128,3 +133,20 @@ pipeline {
 
     }
 }
+
+
+
+//                  // append reportportal.properties for rerun
+//                   def content = """
+//                                     rp.rerun=true
+//                                     rp.rerun.of=${env.LATEST_LAUNCH_ID}
+//                                     rp.launch.uuid=${env.LATEST_LAUNCH_ID}
+//                                     rp.logging=true
+//                                     rp.log.level=DEBUG
+//                                 """.stripIndent()
+//                   def filePath = "${WORKSPACE}/src/test/resources/reportportal.properties"
+//                   def existingContent = readFile(filePath).trim()
+//                   writeFile file: filePath, text: existingContent+content, append:true
+//                  // Print content of the updated file
+//                   echo "Updated content of ${filePath}:"
+//                   echo readFile(filePath)
